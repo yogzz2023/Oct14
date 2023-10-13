@@ -1,0 +1,69 @@
+Certainly, if you want your executable to run as a service and display its output on the screen during boot-up, you can follow these detailed steps:
+
+1. **Create a Shell Script**:
+   Create a shell script that runs your executable. In your home directory, create a file, e.g., `my_executable.sh`:
+
+   ```bash
+   #!/bin/bash
+   /home/user1/downloads/your_executable
+   ```
+
+   Make the script executable:
+
+   ```bash
+   chmod +x ~/my_executable.sh
+   ```
+
+2. **Create a systemd Service Unit File**:
+   Create a systemd service unit file for your script. Open a terminal and use a text editor to create the file:
+
+   ```bash
+   sudo nano /etc/systemd/system/my_service.service
+   ```
+
+   Add the following content:
+
+   ```ini
+   [Unit]
+   Description=My Custom Service
+   After=multi-user.target
+
+   [Service]
+   ExecStart=/bin/bash /home/user1/my_executable.sh
+   Type=simple
+   Restart=always
+   StandardOutput=tty
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+   - `Description` should be a brief description of your service.
+   - `ExecStart` points to your script and uses `/bin/bash` to run it in a shell.
+   - `StandardOutput=tty` ensures the output is displayed on the terminal.
+
+3. **Reload systemd and Enable the Service**:
+   Reload systemd to recognize the new service:
+
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+   Then, enable and start the service:
+
+   ```bash
+   sudo systemctl enable my_service
+   sudo systemctl start my_service
+   ```
+
+4. **Check the Status of the Service**:
+   You can monitor the service status to verify that it's running and view the output:
+
+   ```bash
+   sudo systemctl status my_service
+   ```
+
+5. **Reboot Your System**:
+   Now, when you reboot your system, the service will run your script, and the output will be displayed on the screen during boot-up.
+
+This setup will run your executable as a service and ensure that its output is visible on the screen during boot. Be cautious with this approach, as the output will be displayed on the primary terminal, and you won't be able to interact with the terminal until the service completes or is stopped.
